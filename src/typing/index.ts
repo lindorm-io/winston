@@ -1,4 +1,4 @@
-import { TObject } from "@lindorm-io/global";
+import { TObject } from "@lindorm-io/core";
 
 export type TLogDetails = TObject<any> | Error;
 export type TChildLoggerContext = Array<string> | string;

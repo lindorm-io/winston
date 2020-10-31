@@ -2,7 +2,7 @@ import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
 import { TLogDetails } from "../typing";
-import { TObject } from "@lindorm-io/global";
+import { TObject } from "@lindorm-io/core";
 import { clone, get, isError, set } from "lodash";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";

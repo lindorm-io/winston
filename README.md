@@ -1,14 +1,10 @@
 # @lindorm-io/winston
-This package contains a simple winston logger for lindorm.io packages.
+Simple winston logger for lindorm.io packages.
 
 ## Installation
 ```shell script
 npm install --save @lindorm-io/winston
 ```
-
-### Peer Dependencies
-This package has the following peer dependencies: 
-* [@lindorm-io/global](https://www.npmjs.com/package/@lindorm-io/global)
 
 ## Setup
 ```typescript
