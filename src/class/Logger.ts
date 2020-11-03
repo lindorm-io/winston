@@ -3,7 +3,7 @@ import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } fr
 import { IWinstonInstanceOptions, WinstonInstance } from "./WinstonInstance";
 import { LogLevel } from "../enum";
 import { TChildLoggerContext, TLogDetails, TSessionMetadata } from "../typing";
-import { TObject } from "@lindorm-io/core";
+import { TFunction, TObject } from "@lindorm-io/core";
 import { clone, isArray, isString, isObject } from "lodash";
 
 export interface ILoggerOptions extends IWinstonInstanceOptions {
@@ -113,6 +113,7 @@ export class Logger {
     if (!isString(context) && !isArray(context)) {
       throw new Error(`Invalid context [ ${context} ]`);
     }
+
     return new Logger({ context, parent: this });
   }
 
@@ -120,9 +121,11 @@ export class Logger {
     if (!isObject(session)) {
       throw new Error(`Invalid session [ ${session} ]`);
     }
+
     if (this.session) {
       throw new Error(`Session already exists [ ${fastSafeStringify(this.session)} ]`);
     }
+
     return new Logger({ session, parent: this });
   }
 
@@ -130,14 +133,15 @@ export class Logger {
     if (!this.session) {
       throw new Error(`Session does not exist [ ${fastSafeStringify(this.session)} ]`);
     }
+
     this.session = {
       ...this.session,
       metadata,
     };
   }
 
-  public addFilter(path: string): void {
-    this.winston.addFilter(path);
+  public addFilter(path: string, callback?: TFunction<any>): void {
+    this.winston.addFilter(path, callback);
   }
 
   public addConsole(level: LogLevel = LogLevel.DEBUG): void {

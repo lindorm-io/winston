@@ -2,12 +2,12 @@ import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
 import { TLogDetails } from "../typing";
-import { TObject } from "@lindorm-io/core";
+import { TFunction, TObject } from "@lindorm-io/core";
 import { clone, get, isError, set } from "lodash";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { readableFormat } from "../util";
+import { defaultFilterCallback, readableFormat } from "../util";
 
 export interface ILogOptions {
   context: Array<string>;
@@ -17,9 +17,14 @@ export interface ILogOptions {
   session: TObject<any>;
 }
 
+export interface IFilter {
+  path: string;
+  callback?: TFunction<any>;
+}
+
 export interface IWinstonInstanceOptions {
   directory?: string;
-  filter?: Array<string>;
+  filter?: Array<IFilter>;
   maxFiles?: number;
   maxFileSize?: number;
   packageName?: string;
@@ -28,7 +33,7 @@ export interface IWinstonInstanceOptions {
 
 export class WinstonInstance {
   readonly directory: string;
-  private filter: Array<string>;
+  private filter: Array<IFilter>;
   readonly maxFiles: number;
   readonly maxFileSize: number;
   readonly packageName: string;
@@ -48,12 +53,15 @@ export class WinstonInstance {
   private getFilePath(name: string): string {
     const split = this.packageName.split("/");
     let dir = this.directory;
+
     for (const item of split) {
       dir = join(dir, item.replace("@", ""));
     }
+
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true });
     }
+
     return join(dir, `${name}.log`);
   }
 
@@ -61,7 +69,9 @@ export class WinstonInstance {
     if (!existsSync(this.directory)) {
       mkdirSync(this.directory, { recursive: true });
     }
+
     const name = this.packageName.replace(/\//g, "-").replace(/@/g, "");
+
     return join(this.directory, `tail.${name}.log`);
   }
 
@@ -69,11 +79,17 @@ export class WinstonInstance {
     if (isError(details)) {
       return details;
     }
+
     const result = clone(details);
-    for (const path of this.filter) {
-      if (!get(details, path)) continue;
-      set(result, path, "[Filtered]");
+
+    for (const filter of this.filter) {
+      const data = get(details, filter.path);
+      if (!data) continue;
+
+      const callback = filter.callback || defaultFilterCallback;
+      set(result, filter.path, callback(data));
     }
+
     return result;
   }
 
@@ -92,8 +108,8 @@ export class WinstonInstance {
     });
   }
 
-  public addFilter(path: string): void {
-    this.filter.push(path);
+  public addFilter(path: string, callback?: TFunction<any>): void {
+    this.filter.push({ path, callback });
   }
 
   public addConsole(level: LogLevel = LogLevel.DEBUG): void {
