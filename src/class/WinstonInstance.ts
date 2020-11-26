@@ -1,13 +1,13 @@
 import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
-import { TLogDetails } from "../typing";
 import { TFunction, TObject } from "@lindorm-io/core";
+import { TLogDetails } from "../typing";
 import { clone, get, isError, set } from "lodash";
+import { defaultFilterCallback, readableFormat } from "../util";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { defaultFilterCallback, readableFormat } from "../util";
 
 export interface ILogOptions {
   context: Array<string>;
@@ -25,28 +25,31 @@ export interface IFilter {
 export interface IWinstonInstanceOptions {
   directory?: string;
   filter?: Array<IFilter>;
-  maxFiles?: number;
   maxFileSize?: number;
+  maxFiles?: number;
   packageName?: string;
   packageVersion?: string;
+  test?: boolean;
 }
 
 export class WinstonInstance {
-  readonly directory: string;
+  private directory: string;
   private filter: Array<IFilter>;
-  readonly maxFiles: number;
-  readonly maxFileSize: number;
-  readonly packageName: string;
-  readonly packageVersion: string;
-  readonly winston: winston.Logger;
+  private maxFileSize: number;
+  private maxFiles: number;
+  private packageName: string;
+  private packageVersion: string;
+  private test: boolean;
+  private winston: winston.Logger;
 
   constructor(options: IWinstonInstanceOptions) {
     this.directory = options.directory || join(homedir(), "logs");
     this.filter = options.filter || [];
-    this.maxFiles = options.maxFiles || 10;
     this.maxFileSize = options.maxFileSize || 5242880;
+    this.maxFiles = options.maxFiles || 10;
     this.packageName = options.packageName;
     this.packageVersion = options.packageVersion;
+    this.test = options.test || false;
     this.winston = winston.createLogger();
   }
 
@@ -94,6 +97,8 @@ export class WinstonInstance {
   }
 
   public log(options: ILogOptions): void {
+    if (this.test) return;
+
     this.winston.log({
       level: options.level,
       time: new Date(),
@@ -139,6 +144,8 @@ export class WinstonInstance {
       new winston.transports.File({
         filename: this.getFilePath(level),
         handleExceptions: true,
+        maxsize: this.maxFileSize,
+        maxFiles: this.maxFiles,
         ...options,
         level,
       }),
