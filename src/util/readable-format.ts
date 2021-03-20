@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import fastSafeStringify from "fast-safe-stringify";
 import { LogLevel } from "../enum";
-import { TObject } from "@lindorm-io/core";
+import { TObject } from "../typing";
 import { inspect } from "util";
 import { isError, isObject } from "lodash";
 

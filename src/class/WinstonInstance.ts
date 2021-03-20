@@ -1,7 +1,7 @@
 import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
-import { TFunction, TObject } from "@lindorm-io/core";
+import { TFunction, TObject } from "../typing";
 import { TLogDetails } from "../typing";
 import { clone, get, isError, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";

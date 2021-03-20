@@ -3,7 +3,7 @@ import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } fr
 import { IWinstonInstanceOptions, WinstonInstance } from "./WinstonInstance";
 import { LogLevel } from "../enum";
 import { TChildLoggerContext, TLogDetails, TSessionMetadata } from "../typing";
-import { TFunction, TObject } from "@lindorm-io/core";
+import { TFunction, TObject } from "../typing";
 import { clone, isArray, isString, isObject } from "lodash";
 
 export interface ILoggerOptions extends IWinstonInstanceOptions {
