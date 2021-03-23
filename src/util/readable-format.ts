@@ -1,11 +1,10 @@
 import chalk from "chalk";
 import fastSafeStringify from "fast-safe-stringify";
 import { LogLevel } from "../enum";
-import { TObject } from "../typing";
 import { inspect } from "util";
 import { isError, isObject } from "lodash";
 
-const sanitize = (object: TObject<any>): TObject<any> => {
+const sanitize = (object: Record<string, any>): Record<string, any> => {
   return JSON.parse(fastSafeStringify(object));
 };
 
@@ -39,7 +38,7 @@ const levelColor = (level: string, input: string): string => {
   }
 };
 
-const formatContent = (details: TObject<any>): string => {
+const formatContent = (details: Record<string, any>): string => {
   return inspect(sanitize(details), {
     colors: true,
     depth: Infinity,

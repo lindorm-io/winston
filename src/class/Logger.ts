@@ -1,20 +1,13 @@
 import fastSafeStringify from "fast-safe-stringify";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
-import { IWinstonInstanceOptions, WinstonInstance } from "./WinstonInstance";
+import { ILoggerOptions, TChildLoggerContext, TFilterCallback, TLogDetails, TSessionMetadata } from "../typing";
 import { LogLevel } from "../enum";
-import { TChildLoggerContext, TLogDetails, TSessionMetadata } from "../typing";
-import { TFunction, TObject } from "../typing";
+import { WinstonInstance } from "./WinstonInstance";
 import { clone, isArray, isString, isObject } from "lodash";
-
-export interface ILoggerOptions extends IWinstonInstanceOptions {
-  context?: TChildLoggerContext;
-  session?: TObject<any>;
-  parent?: Logger;
-}
 
 export class Logger {
   private context: Array<string>;
-  private session: TObject<any>;
+  private session: Record<string, any>;
   private winston: WinstonInstance;
 
   constructor(options: ILoggerOptions = {}) {
@@ -117,7 +110,7 @@ export class Logger {
     return new Logger({ context, parent: this });
   }
 
-  public createSessionLogger(session: TObject<any>): Logger {
+  public createSessionLogger(session: Record<string, any>): Logger {
     if (!isObject(session)) {
       throw new Error(`Invalid session [ ${session} ]`);
     }
@@ -140,7 +133,7 @@ export class Logger {
     };
   }
 
-  public addFilter(path: string, callback?: TFunction<any>): void {
+  public addFilter(path: string, callback?: TFilterCallback): void {
     this.winston.addFilter(path, callback);
   }
 

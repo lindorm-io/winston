@@ -1,36 +1,12 @@
 import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
+import { IFilter, ILogOptions, IWinstonInstanceOptions, TFilterCallback } from "../typing";
 import { LogLevel } from "../enum";
-import { TFunction, TObject } from "../typing";
-import { TLogDetails } from "../typing";
 import { clone, get, isError, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-
-export interface ILogOptions {
-  context: Array<string>;
-  details: TLogDetails;
-  level: LogLevel;
-  message: string;
-  session: TObject<any>;
-}
-
-export interface IFilter {
-  path: string;
-  callback?: TFunction<any>;
-}
-
-export interface IWinstonInstanceOptions {
-  directory?: string;
-  filter?: Array<IFilter>;
-  maxFileSize?: number;
-  maxFiles?: number;
-  packageName?: string;
-  packageVersion?: string;
-  test?: boolean;
-}
 
 export class WinstonInstance {
   private directory: string;
@@ -78,7 +54,7 @@ export class WinstonInstance {
     return join(this.directory, `tail.${name}.log`);
   }
 
-  private getFilteredDetails(details: TObject<any>): TObject<any> {
+  private getFilteredDetails(details: Record<string, any>): Record<string, any> {
     if (isError(details)) {
       return details;
     }
@@ -113,7 +89,7 @@ export class WinstonInstance {
     });
   }
 
-  public addFilter(path: string, callback?: TFunction<any>): void {
+  public addFilter(path: string, callback?: TFilterCallback): void {
     this.filter.push({ path, callback });
   }
 
