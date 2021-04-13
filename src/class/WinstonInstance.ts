@@ -2,7 +2,7 @@ import * as winston from "winston";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { IFilter, ILogOptions, IWinstonInstanceOptions, TFilterCallback } from "../typing";
 import { LogLevel } from "../enum";
-import { clone, get, isError, set } from "lodash";
+import { clone, get, includes, isError, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";
@@ -11,6 +11,7 @@ import { join } from "path";
 export class WinstonInstance {
   private directory: string;
   private filter: Array<IFilter>;
+  private focus: string;
   private maxFileSize: number;
   private maxFiles: number;
   private packageName: string;
@@ -21,6 +22,7 @@ export class WinstonInstance {
   constructor(options: IWinstonInstanceOptions) {
     this.directory = options.directory || join(homedir(), "logs");
     this.filter = options.filter || [];
+    this.focus = null;
     this.maxFileSize = options.maxFileSize || 5242880;
     this.maxFiles = options.maxFiles || 10;
     this.packageName = options.packageName;
@@ -74,6 +76,7 @@ export class WinstonInstance {
 
   public log(options: ILogOptions): void {
     if (this.test) return;
+    if (this.focus && options.context.length && !includes(options.context, this.focus)) return;
 
     this.winston.log({
       level: options.level,
@@ -91,6 +94,10 @@ export class WinstonInstance {
 
   public addFilter(path: string, callback?: TFilterCallback): void {
     this.filter.push({ path, callback });
+  }
+
+  public setFocus(focus: string | null): void {
+    this.focus = focus || null;
   }
 
   public addConsole(level: LogLevel = LogLevel.DEBUG): void {

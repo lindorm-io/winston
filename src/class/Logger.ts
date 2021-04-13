@@ -137,6 +137,10 @@ export class Logger {
     this.winston.addFilter(path, callback);
   }
 
+  public setFocus(focus: string | null): void {
+    this.winston.setFocus(focus);
+  }
+
   public addConsole(level: LogLevel = LogLevel.DEBUG): void {
     this.winston.addConsole(level);
   }
