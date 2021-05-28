@@ -31,7 +31,7 @@
     "test": "npm run test:unit",
     "test:clear": "jest --clearCache",
     "test:unit": "jest --config jest.config.js --",
-    "test:unit:watch": "jest --config jest.config.js --",
+    "test:unit:watch": "jest --config jest.config.js --watch --",
     "test:update": "jest --updateSnapshot",
     "test:watch": "npm run test:unit:watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
