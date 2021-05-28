@@ -6,9 +6,9 @@ import { WinstonInstance } from "./WinstonInstance";
 import { clone, isArray, isString, isObject } from "lodash";
 
 export class Logger {
-  private context: Array<string>;
-  private session: Record<string, any>;
-  private winston: WinstonInstance;
+  private readonly context: Array<string>;
+  private readonly winston: WinstonInstance;
+  private session: Record<string, any> | undefined;
 
   constructor(options: ILoggerOptions = {}) {
     if (!options.parent && (!options.packageName || !options.packageVersion)) {
@@ -29,7 +29,7 @@ export class Logger {
       this.session = clone(options.parent.session);
     }
 
-    this.addContext(options.context);
+    this.addContext(options.context || []);
   }
 
   private addContext(context: TChildLoggerContext): void {
@@ -46,9 +46,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.ERROR,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 
@@ -56,9 +56,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.WARN,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 
@@ -66,9 +66,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.INFO,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 
@@ -76,9 +76,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.VERBOSE,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 
@@ -86,9 +86,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.DEBUG,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 
@@ -96,9 +96,9 @@ export class Logger {
     this.winston.log({
       level: LogLevel.SILLY,
       message,
-      details,
+      details: details || {},
       context: this.context,
-      session: this.session,
+      session: this.session || {},
     });
   }
 

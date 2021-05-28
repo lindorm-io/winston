@@ -9,15 +9,15 @@ import { homedir } from "os";
 import { join } from "path";
 
 export class WinstonInstance {
-  private directory: string;
-  private filter: Array<IFilter>;
-  private focus: string;
-  private maxFileSize: number;
-  private maxFiles: number;
-  private packageName: string;
-  private packageVersion: string;
-  private test: boolean;
-  private winston: winston.Logger;
+  private readonly directory: string;
+  private readonly filter: Array<IFilter>;
+  private readonly maxFileSize: number;
+  private readonly maxFiles: number;
+  private readonly packageName: string | null;
+  private readonly packageVersion: string | null;
+  private readonly test: boolean;
+  private readonly winston: winston.Logger;
+  private focus: string | null;
 
   constructor(options: IWinstonInstanceOptions) {
     this.directory = options.directory || join(homedir(), "logs");
@@ -25,13 +25,17 @@ export class WinstonInstance {
     this.focus = null;
     this.maxFileSize = options.maxFileSize || 5242880;
     this.maxFiles = options.maxFiles || 10;
-    this.packageName = options.packageName;
-    this.packageVersion = options.packageVersion;
+    this.packageName = options.packageName || null;
+    this.packageVersion = options.packageVersion || null;
     this.test = options.test || false;
     this.winston = winston.createLogger();
   }
 
   private getFilePath(name: string): string {
+    if (!this.packageName) {
+      throw new Error("packageName required");
+    }
+
     const split = this.packageName.split("/");
     let dir = this.directory;
 
@@ -47,6 +51,10 @@ export class WinstonInstance {
   }
 
   private getFilePathTail(): string {
+    if (!this.packageName) {
+      throw new Error("packageName required");
+    }
+
     if (!existsSync(this.directory)) {
       mkdirSync(this.directory, { recursive: true });
     }
