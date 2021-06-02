@@ -1,6 +1,6 @@
 import * as winston from "winston";
+import { Filter, LogOptions, WinstonInstanceOptions, FilterCallback } from "../typing";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
-import { IFilter, ILogOptions, IWinstonInstanceOptions, TFilterCallback } from "../typing";
 import { LogLevel } from "../enum";
 import { clone, get, includes, isError, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";
@@ -10,7 +10,7 @@ import { join } from "path";
 
 export class WinstonInstance {
   private readonly directory: string;
-  private readonly filter: Array<IFilter>;
+  private readonly filter: Array<Filter>;
   private readonly maxFileSize: number;
   private readonly maxFiles: number;
   private readonly packageName: string | null;
@@ -19,7 +19,7 @@ export class WinstonInstance {
   private readonly winston: winston.Logger;
   private focus: string | null;
 
-  constructor(options: IWinstonInstanceOptions) {
+  public constructor(options: WinstonInstanceOptions) {
     this.directory = options.directory || join(homedir(), "logs");
     this.filter = options.filter || [];
     this.focus = null;
@@ -82,7 +82,7 @@ export class WinstonInstance {
     return result;
   }
 
-  public log(options: ILogOptions): void {
+  public log(options: LogOptions): void {
     if (this.test) return;
     if (this.focus && options.context.length && !includes(options.context, this.focus)) return;
 
@@ -100,7 +100,7 @@ export class WinstonInstance {
     });
   }
 
-  public addFilter(path: string, callback?: TFilterCallback): void {
+  public addFilter(path: string, callback?: FilterCallback): void {
     this.filter.push({ path, callback });
   }
 

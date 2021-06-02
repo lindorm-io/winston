@@ -1,7 +1,7 @@
 import fastSafeStringify from "fast-safe-stringify";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
-import { ILoggerOptions, TChildLoggerContext, TFilterCallback, TLogDetails, TSessionMetadata } from "../typing";
 import { LogLevel } from "../enum";
+import { LoggerOptions, ChildLoggerContext, FilterCallback, LogDetails, SessionMetadata } from "../typing";
 import { WinstonInstance } from "./WinstonInstance";
 import { clone, isArray, isString, isObject } from "lodash";
 
@@ -10,9 +10,9 @@ export class Logger {
   private readonly winston: WinstonInstance;
   private session: Record<string, any> | undefined;
 
-  constructor(options: ILoggerOptions = {}) {
+  public constructor(options: LoggerOptions = {}) {
     if (!options.parent && (!options.packageName || !options.packageVersion)) {
-      throw new Error("winston needs to be initialized with [ packageName ] and [ packageVersion ]");
+      throw new Error("Logger needs to be initialized with [ packageName, packageVersion ]");
     }
 
     if (!options.parent) {
@@ -32,7 +32,7 @@ export class Logger {
     this.addContext(options.context || []);
   }
 
-  private addContext(context: TChildLoggerContext): void {
+  private addContext(context: ChildLoggerContext): void {
     if (isArray(context)) {
       for (const item of context) {
         this.context.push(item);
@@ -42,7 +42,7 @@ export class Logger {
     }
   }
 
-  public error(message: string, details?: TLogDetails): void {
+  public error(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.ERROR,
       message,
@@ -52,7 +52,7 @@ export class Logger {
     });
   }
 
-  public warn(message: string, details?: TLogDetails): void {
+  public warn(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.WARN,
       message,
@@ -62,7 +62,7 @@ export class Logger {
     });
   }
 
-  public info(message: string, details?: TLogDetails): void {
+  public info(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.INFO,
       message,
@@ -72,7 +72,7 @@ export class Logger {
     });
   }
 
-  public verbose(message: string, details?: TLogDetails): void {
+  public verbose(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.VERBOSE,
       message,
@@ -82,7 +82,7 @@ export class Logger {
     });
   }
 
-  public debug(message: string, details?: TLogDetails): void {
+  public debug(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.DEBUG,
       message,
@@ -92,7 +92,7 @@ export class Logger {
     });
   }
 
-  public silly(message: string, details?: TLogDetails): void {
+  public silly(message: string, details?: LogDetails): void {
     this.winston.log({
       level: LogLevel.SILLY,
       message,
@@ -102,7 +102,7 @@ export class Logger {
     });
   }
 
-  public createChildLogger(context: TChildLoggerContext): Logger {
+  public createChildLogger(context: ChildLoggerContext): Logger {
     if (!isString(context) && !isArray(context)) {
       throw new Error(`Invalid context [ ${context} ]`);
     }
@@ -122,7 +122,7 @@ export class Logger {
     return new Logger({ session, parent: this });
   }
 
-  public addSessionMetadata(metadata: TSessionMetadata): void {
+  public addSessionMetadata(metadata: SessionMetadata): void {
     if (!this.session) {
       throw new Error(`Session does not exist [ ${fastSafeStringify(this.session)} ]`);
     }
@@ -133,7 +133,7 @@ export class Logger {
     };
   }
 
-  public addFilter(path: string, callback?: TFilterCallback): void {
+  public addFilter(path: string, callback?: FilterCallback): void {
     this.winston.addFilter(path, callback);
   }
 

@@ -1,4 +1,4 @@
-export const defaultFilterCallback = (data: any): string | null => {
-  if (!data) return null;
+export const defaultFilterCallback = (data: any): string => {
+  if (!data) return data;
   return "[Filtered]";
 };

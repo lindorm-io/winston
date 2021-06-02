@@ -32,30 +32,28 @@ describe("Logger.ts", () => {
   });
 
   test("should throw error when there is no package information", () => {
-    expect(() => new Logger({})).toThrow(
-      Error("winston needs to be initialized with [ packageName ] and [ packageVersion ]"),
-    );
+    expect(() => new Logger({})).toThrow(Error);
   });
 
   test("should throw error when the context is wrong", () => {
     // @ts-ignore
-    expect(() => instance.createChildLogger(12345)).toThrow(Error("Invalid context [ 12345 ]"));
+    expect(() => instance.createChildLogger(12345)).toThrow(Error);
   });
 
   test("should throw error when the session is wrong", () => {
     // @ts-ignore
-    expect(() => instance.createSessionLogger(12345)).toThrow(Error("Invalid session [ 12345 ]"));
+    expect(() => instance.createSessionLogger(12345)).toThrow(Error);
   });
 
   test("should throw error when session already exists", () => {
     const session = instance.createSessionLogger({ id: "1" });
 
     // @ts-ignore
-    expect(() => session.createSessionLogger({ id: "2" })).toThrow(Error('Session already exists [ {"id":"1"} ]'));
+    expect(() => session.createSessionLogger({ id: "2" })).toThrow(Error);
   });
 
   test("should throw error when session does not exist", () => {
-    expect(() => instance.addSessionMetadata({ data: "two" })).toThrow(Error("Session does not exist [ undefined ]"));
+    expect(() => instance.addSessionMetadata({ data: "two" })).toThrow(Error);
   });
 
   test("should add path to filter", () => {

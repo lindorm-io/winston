@@ -1,27 +1,27 @@
 import { LogLevel } from "../enum";
 import { Logger } from "../class";
 
-export type TChildLoggerContext = Array<string> | string;
-export type TLogDetails = Record<string, any> | Error;
-export type TSessionMetadata = Record<string, string | number | boolean>;
-export type TFilterCallback = (data: any) => string;
+export type ChildLoggerContext = Array<string> | string;
+export type LogDetails = Record<string, any> | Error;
+export type SessionMetadata = Record<string, string | number | boolean>;
+export type FilterCallback = (data: any) => string;
 
-export interface ILogOptions {
+export interface LogOptions {
   context: Array<string>;
-  details: TLogDetails;
+  details: LogDetails;
   level: LogLevel;
   message: string;
   session: Record<string, any>;
 }
 
-export interface IFilter {
+export interface Filter {
   path: string;
-  callback?: TFilterCallback;
+  callback?: FilterCallback;
 }
 
-export interface IWinstonInstanceOptions {
+export interface WinstonInstanceOptions {
   directory?: string;
-  filter?: Array<IFilter>;
+  filter?: Array<Filter>;
   maxFileSize?: number;
   maxFiles?: number;
   packageName?: string;
@@ -29,8 +29,8 @@ export interface IWinstonInstanceOptions {
   test?: boolean;
 }
 
-export interface ILoggerOptions extends IWinstonInstanceOptions {
-  context?: TChildLoggerContext;
+export interface LoggerOptions extends WinstonInstanceOptions {
+  context?: ChildLoggerContext;
   session?: Record<string, any>;
   parent?: Logger;
 }
