@@ -1,9 +1,11 @@
 import fastSafeStringify from "fast-safe-stringify";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
+import { LoggerError } from "../error";
 import { LoggerOptions, ChildLoggerContext, FilterCallback, LogDetails, SessionMetadata } from "../typing";
 import { WinstonInstance } from "./WinstonInstance";
-import { clone, isArray, isString, isObject } from "lodash";
+import { clone, isArray, isString } from "lodash";
+import { isObjectStrict } from "@lindorm-io/core";
 
 export class Logger {
   private readonly context: Array<string>;
@@ -12,7 +14,7 @@ export class Logger {
 
   public constructor(options: LoggerOptions = {}) {
     if (!options.parent && (!options.packageName || !options.packageVersion)) {
-      throw new Error("Logger needs to be initialized with [ packageName, packageVersion ]");
+      throw new LoggerError("Logger needs to be initialized with [ packageName, packageVersion ]");
     }
 
     if (!options.parent) {
@@ -104,19 +106,25 @@ export class Logger {
 
   public createChildLogger(context: ChildLoggerContext): Logger {
     if (!isString(context) && !isArray(context)) {
-      throw new Error(`Invalid context [ ${context} ]`);
+      throw new LoggerError("Invalid logger context", {
+        debug: { context },
+      });
     }
 
     return new Logger({ context, parent: this });
   }
 
   public createSessionLogger(session: Record<string, any>): Logger {
-    if (!isObject(session)) {
-      throw new Error(`Invalid session [ ${session} ]`);
+    if (!isObjectStrict(session)) {
+      throw new LoggerError("Invalid logger session", {
+        debug: { session: fastSafeStringify(session) },
+      });
     }
 
     if (this.session) {
-      throw new Error(`Session already exists [ ${fastSafeStringify(this.session)} ]`);
+      throw new LoggerError("Logger session already exists", {
+        debug: { session: fastSafeStringify(this.session) },
+      });
     }
 
     return new Logger({ session, parent: this });
@@ -124,7 +132,9 @@ export class Logger {
 
   public addSessionMetadata(metadata: SessionMetadata): void {
     if (!this.session) {
-      throw new Error(`Session does not exist [ ${fastSafeStringify(this.session)} ]`);
+      throw new LoggerError("Logger session not found", {
+        debug: { session: this.session },
+      });
     }
 
     this.session = {

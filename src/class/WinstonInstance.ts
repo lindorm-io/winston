@@ -2,6 +2,7 @@ import * as winston from "winston";
 import { Filter, LogOptions, WinstonInstanceOptions, FilterCallback } from "../typing";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
+import { LoggerError } from "../error";
 import { clone, get, includes, isError, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";
 import { existsSync, mkdirSync } from "fs";
@@ -33,7 +34,7 @@ export class WinstonInstance {
 
   private getFilePath(name: string): string {
     if (!this.packageName) {
-      throw new Error("packageName required");
+      throw new LoggerError("packageName not found");
     }
 
     const split = this.packageName.split("/");
@@ -52,7 +53,7 @@ export class WinstonInstance {
 
   private getFilePathTail(): string {
     if (!this.packageName) {
-      throw new Error("packageName required");
+      throw new LoggerError("packageName not found");
     }
 
     if (!existsSync(this.directory)) {
