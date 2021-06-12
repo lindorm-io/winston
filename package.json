@@ -41,8 +41,8 @@
     "validate": "npm run test:clear && npm run check:lint && npm run check:types && npm test"
   },
   "dependencies": {
-    "@lindorm-io/core": "^0.2.4",
-    "@lindorm-io/errors": "^0.1.4",
+    "@lindorm-io/core": "^0.2.5",
+    "@lindorm-io/errors": "^0.1.5",
     "chalk": "^4.1.1",
     "fast-safe-stringify": "^2.0.7",
     "lodash": "^4.17.21",
