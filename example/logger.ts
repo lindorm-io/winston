@@ -1,4 +1,5 @@
 import { Logger, LogLevel } from "../src";
+import { LindormError } from "@lindorm-io/errors";
 
 const logger = new Logger({
   packageName: "example",
@@ -17,7 +18,20 @@ logger.info("this will be displayed");
 
 logger.warn("this will be displayed as a warning");
 
-logger.error("this will be displayed as an error");
+logger.error("this is a simple error message", new Error("simple error message"));
+
+logger.error(
+  "this is an error with data",
+  new LindormError("lindorm error message", {
+    code: "error_code",
+    data: { publicData: true },
+    debug: { debugData: "value" },
+    description: "error description",
+    error: new LindormError("original error", {
+      title: "original error title",
+    }),
+  }),
+);
 
 logger.info("this will be displayed with a details object", { details: "data" });
 
