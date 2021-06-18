@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import fastSafeStringify from "fast-safe-stringify";
+import { ExtendableError } from "@lindorm-io/errors";
 import { LogLevel } from "../enum";
 import { inspect } from "util";
 import { isError, isObject } from "lodash";
@@ -38,9 +39,9 @@ const levelColor = (level: string, input: string): string => {
   }
 };
 
-const formatContent = (details: Record<string, any>): string => {
+const formatContent = (details: Record<string, any>, colors?: boolean): string => {
   return inspect(sanitize(details), {
-    colors: true,
+    colors: colors !== false,
     depth: Infinity,
     compact: 5,
     breakLength: process.stdout.columns ? process.stdout.columns - 10 : 140,
@@ -59,18 +60,26 @@ export const readableFormat = (msg: any): string => {
     const formatted = `${time}  ${level}${chalk.black(":")} ${message}${context}`;
 
     if (isError(msg.details)) {
+      if (msg.details instanceof ExtendableError) {
+        const { id, errors, stack, ...rest } = msg.details;
+        const details = formatContent(rest, false);
+
+        return `${formatted}\n${chalk.red(stack)}\n${chalk.red(details)}`;
+      }
+
       const details = msg.details.stack ? msg.details.stack : msg.details;
+
       return `${formatted}\n${chalk.red(details)}`;
     }
 
-    if (isObject(msg.details) && !isError(msg.details)) {
+    if (isObject(msg.details)) {
       const details = formatContent(msg.details);
       return `${formatted}\n${details}`;
     }
 
     return formatted;
   } catch (err) {
-    console.error(err);
+    console.error("error when formatting message", err);
     return fastSafeStringify(msg);
   }
 };
