@@ -48,7 +48,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.ERROR,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });
@@ -58,7 +58,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.WARN,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });
@@ -68,7 +68,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.INFO,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });
@@ -78,7 +78,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.VERBOSE,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });
@@ -88,7 +88,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.DEBUG,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });
@@ -98,7 +98,7 @@ export class Logger {
     this.winston.log({
       level: LogLevel.SILLY,
       message,
-      details: details || {},
+      details: details || null,
       context: this.context,
       session: this.session || {},
     });

@@ -2,7 +2,7 @@ import { LogLevel } from "../enum";
 import { Logger } from "../class";
 
 export type ChildLoggerContext = Array<string> | string;
-export type LogDetails = Record<string, any> | Error;
+export type LogDetails = Record<string, any> | Error | null;
 export type SessionMetadata = Record<string, string | number | boolean>;
 export type FilterCallback = (data: any) => string;
 

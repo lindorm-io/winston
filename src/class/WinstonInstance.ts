@@ -1,9 +1,9 @@
 import * as winston from "winston";
-import { Filter, LogOptions, WinstonInstanceOptions, FilterCallback } from "../typing";
+import { Filter, LogOptions, WinstonInstanceOptions, FilterCallback, LogDetails } from "../typing";
 import { HttpTransportOptions, StreamTransportOptions, FileTransportOptions } from "winston/lib/winston/transports";
 import { LogLevel } from "../enum";
 import { LoggerError } from "../error";
-import { clone, get, includes, isError, set } from "lodash";
+import { clone, get, includes, isError, isObject, set } from "lodash";
 import { defaultFilterCallback, readableFormat } from "../util";
 import { existsSync, mkdirSync } from "fs";
 import { homedir } from "os";
@@ -65,10 +65,9 @@ export class WinstonInstance {
     return join(this.directory, `tail.${name}.log`);
   }
 
-  private getFilteredDetails(details: Record<string, any>): Record<string, any> {
-    if (isError(details)) {
-      return details;
-    }
+  private getFilteredDetails(details: LogDetails): LogDetails {
+    if (!isObject(details)) return details;
+    if (isError(details)) return details;
 
     const result = clone(details);
 
