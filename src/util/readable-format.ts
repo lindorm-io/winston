@@ -50,6 +50,10 @@ const formatContent = (details: Record<string, any>, colors?: boolean): string =
 };
 
 export const readableFormat = (msg: any): string => {
+  if (!msg.time || !msg.context) {
+    return formatContent(msg, false);
+  }
+
   try {
     const time = chalk.black(msg.time.toISOString());
     const level = formatLevel(msg.level);
